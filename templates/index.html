@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>360° Capture</title>
+  <style>
+    video, canvas { max-width: 90%; margin: 10px auto; display: block; }
+    #photos img { width: 100px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Capture 360° Photos of Your Location</h2>
+  <p>Move around in a circle and take multiple shots to cover 360°.</p>
+
+  <video id="video" autoplay></video>
+  <button id="snap">Take Photo</button>
+  <form id="uploadForm" method="POST" action="/upload" enctype="multipart/form-data">
+    <div id="photos"></div>
+    <button type="submit">Upload All</button>
+  </form>
+
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script>
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const photosDiv = document.getElementById("photos");
+    const form = document.getElementById("uploadForm");
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => { video.srcObject = stream; });
+
+    document.getElementById("snap").addEventListener("click", () => {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(blob => {
+        const file = new File([blob], `photo_${Date.now()}.png`, { type: "image/png" });
+
+        // preview
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(blob);
+        photosDiv.appendChild(img);
+
+        // add hidden input
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        const input = document.createElement("input");
+        input.type = "file";
+        input.name = "images";
+        input.files = dataTransfer.files;
+        input.style.display = "none";
+        form.appendChild(input);
+      });
+    });
+  </script>
+</body>
+</html>

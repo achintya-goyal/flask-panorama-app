@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Panorama Result</title>
+</head>
+<body>
+  <h2>Your 360° Panorama</h2>
+  <img src="{{ url_for('result_file', filename=image) }}" style="max-width: 90%;">
+
+  <form action="{{ url_for('final_upload', filename=image) }}" method="post">
+    <button type="submit">📤 Final Upload (Send to Admin)</button>
+  </form>
+
+  <br><a href="/">Capture Again</a>
+</body>
+</html>
