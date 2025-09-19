@@ -12,7 +12,7 @@
   <h2>Capture 360° Photos of Your Location</h2>
   <p>Move around in a circle and take multiple shots to cover 360°.</p>
 
-  <video id="video" autoplay></video>
+  <video id="video" autoplay playsinline></video>
   <button id="snap">Take Photo</button>
   <form id="uploadForm" method="POST" action="/upload" enctype="multipart/form-data">
     <div id="photos"></div>
@@ -28,9 +28,18 @@
     const photosDiv = document.getElementById("photos");
     const form = document.getElementById("uploadForm");
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => { video.srcObject = stream; });
+    // Try rear camera first, fallback to front if not available
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } } })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        console.error("Rear camera not available, falling back to default:", err);
+        return navigator.mediaDevices.getUserMedia({ video: true })
+          .then(stream => { video.srcObject = stream; });
+      });
 
+    // Capture snapshot
     document.getElementById("snap").addEventListener("click", () => {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
@@ -39,12 +48,12 @@
       canvas.toBlob(blob => {
         const file = new File([blob], `photo_${Date.now()}.png`, { type: "image/png" });
 
-        // preview
+        // Preview
         const img = document.createElement("img");
         img.src = URL.createObjectURL(blob);
         photosDiv.appendChild(img);
 
-        // add hidden input
+        // Add hidden input for upload
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
         const input = document.createElement("input");
