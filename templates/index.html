@@ -4,73 +4,8 @@
   <meta charset="UTF-8">
   <title>360° Capture</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-      background: #f9f9f9;
-    }
-
-    h2 {
-      color: #333;
-    }
-
-    p {
-      color: #555;
-    }
-
-    video, canvas {
-      max-width: 100%;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      margin: 15px auto;
-      display: block;
-    }
-
-    button {
-      background: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      margin: 10px;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    button:hover {
-      background: #45a049;
-    }
-
-    #photos {
-      margin-top: 15px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    #photos img {
-      width: 90px;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-
-    @media (min-width: 768px) {
-      button {
-        font-size: 18px;
-        padding: 14px 24px;
-      }
-
-      #photos img {
-        width: 120px;
-        height: 120px;
-      }
-    }
+    video, canvas { max-width: 90%; margin: 10px auto; display: block; }
+    #photos img { width: 100px; margin: 5px; }
   </style>
 </head>
 <body>
@@ -78,10 +13,10 @@
   <p>Move around in a circle and take multiple shots to cover 360°.</p>
 
   <video id="video" autoplay playsinline></video>
-  <button id="snap">📸 Take Photo</button>
+  <button id="snap">Take Photo</button>
   <form id="uploadForm" method="POST" action="/upload" enctype="multipart/form-data">
     <div id="photos"></div>
-    <button type="submit">⬆️ Upload All</button>
+    <button type="submit">Upload All</button>
   </form>
 
   <canvas id="canvas" style="display:none;"></canvas>
@@ -99,7 +34,7 @@
         video.srcObject = stream;
       })
       .catch(err => {
-        console.error("Rear camera not available, falling back:", err);
+        console.error("Rear camera not available, falling back to default:", err);
         return navigator.mediaDevices.getUserMedia({ video: true })
           .then(stream => { video.srcObject = stream; });
       });
